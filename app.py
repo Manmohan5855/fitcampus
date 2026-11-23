@@ -7,7 +7,7 @@ from models import db, User, FitnessProfile, WorkoutPlan, DietPlan, DailyLog, Re
 import gemini_integration
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'fitcampus-super-secret-key-183921'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fitcampus-development-secret')
 # Use /tmp directory for SQLite on Vercel since the environment filesystem is read-only
 if os.environ.get('VERCEL'):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/fitcampus.db'
