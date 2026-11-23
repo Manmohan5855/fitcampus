@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - FitCampus AI{% endblock %}
+
+{% block dashboard_content %}
+<div class="main-header" style="margin-bottom: 30px;">
+    <h1>🛡️ Administrative Control Panel</h1>
+    <p style="color: var(--text-secondary);">Manage registered users, update platform-wide tip metrics, and review usage stats.</p>
+</div>
+
+<!-- Usage Statistics Cards -->
+<div class="admin-metrics">
+    <div class="card stat-card" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.15);">
+        <span class="stat-val" style="color: var(--primary);">{{ stats.total_users }}</span>
+        <span class="stat-label">Total Users</span>
+    </div>
+    
+    <div class="card stat-card" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.15);">
+        <span class="stat-val" style="color: var(--success);">{{ stats.total_workouts }}</span>
+        <span class="stat-label">Workouts Generated</span>
+    </div>
+    
+    <div class="card stat-card" style="background: rgba(139, 92, 246, 0.05); border-color: rgba(139, 92, 246, 0.15);">
+        <span class="stat-val" style="color: var(--accent);">{{ stats.total_diets }}</span>
+        <span class="stat-label">Diets Generated</span>
+    </div>
+    
+    <div class="card stat-card" style="background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.15);">
+        <span class="stat-val" style="color: var(--warning);">{{ stats.total_logs }}</span>
+        <span class="stat-label">Total Log Entries</span>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    
+    <!-- Left Column: User Management Table -->
+    <div class="dashboard-left" style="grid-column: span 2;">
+        <div class="card">
+            <h3>👥 User Accounts</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Platform accounts overview. Toggle permissions or adjust subscription plans.</p>
+            
+            <div class="table-responsive">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Date Joined</th>
+                            <th>Account Tier</th>
+                            <th>Roles</th>
+                            <th style="text-align: right;">Administrative Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usr in users %}
+                        <tr>
+                            <td>#{{ usr.id }}</td>
+                            <td><strong>{{ usr.username }}</strong></td>
+                            <td>{{ usr.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if usr.is_premium %}
+                                <span class="badge badge-premium">Premium</span>
+                                {% else %}
+                                <span class="badge badge-standard">Standard</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if usr.is_admin %}
+                                <span class="badge badge-admin">Admin</span>
+                                {% else %}
+                                <span class="badge badge-standard">User</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right; display: flex; justify-content: flex-end; gap: 8px;">
+                                <form action="{{ url_for('admin_toggle_premium', user_id=usr.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 12px;">
+                                        Tier Toggle
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('admin_toggle_admin', user_id=usr.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 12px;">
+                                        Role Toggle
+                                    </button>
+                                </form>
+                                {% if usr.id != current_user.id %}
+                                <form action="{{ url_for('admin_delete_user', user_id=usr.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to permanently delete this user?');">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 12px; color: var(--danger); border-color: rgba(239, 68, 68, 0.2);">
+                                        Delete
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<!-- Motivational Tip Configuration Card -->
+<div class="card" style="margin-top: 30px;">
+    <h3>💡 Platform-wide Content Configuration</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Update the 'Tip of the Day' presented on dashboard cards for all active users.</p>
+    
+    <form action="{{ url_for('admin_update_tip') }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+        <div class="form-group">
+            <label for="coach_tip">AI Coach Tip of the Day</label>
+            <textarea id="coach_tip" name="coach_tip" rows="3" placeholder="Enter fitness, study balance, or hostel diet hacks..." required>{{ current_tip }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-success" style="width: fit-content;">
+            Publish Coach Tip <i class="fas fa-paper-plane"></i>
+        </button>
+    </form>
+</div>
+{% endblock %}

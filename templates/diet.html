@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Diet Recommendations - FitCampus AI{% endblock %}
+
+{% block dashboard_content %}
+<div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+    <div>
+        <h1>🍎 My AI Diet Plan</h1>
+        <p style="color: var(--text-secondary);">Your daily caloric target, macro splits, and student meal ideas.</p>
+    </div>
+    
+    {% if profile %}
+    <form action="{{ url_for('regenerate_diet') }}" method="POST">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-arrows-rotate"></i> Regenerate Diet
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{% if not profile %}
+<div class="card" style="text-align: center; padding: 40px 20px;">
+    <div style="font-size: 48px; color: var(--text-muted); margin-bottom: 20px;"><i class="fas fa-lock"></i></div>
+    <h3>Diet Plan Locked</h3>
+    <p style="color: var(--text-secondary); max-width: 500px; margin: 10px auto 20px auto;">
+        You must setup your fitness profile first to let our AI Coach generate custom diet plans.
+    </p>
+    <a href="{{ url_for('profile_setup') }}" class="btn btn-primary">Setup Profile Now</a>
+</div>
+{% elif not active_plan %}
+<div class="card" style="text-align: center; padding: 40px 20px;">
+    <div style="font-size: 48px; color: var(--primary); margin-bottom: 20px;"><i class="fas fa-wand-magic-sparkles"></i></div>
+    <h3>Generate Your First Diet Plan</h3>
+    <p style="color: var(--text-secondary); max-width: 500px; margin: 10px auto 20px auto;">
+        Your profile is set up! Click the button below to generate your budget-friendly diet recommendations.
+    </p>
+    <form action="{{ url_for('regenerate_diet') }}" method="POST">
+        <button type="submit" class="btn btn-success">
+            Generate Diet Plan <i class="fas fa-apple-whole"></i>
+        </button>
+    </form>
+</div>
+{% else %}
+<!-- Display the active AI generated plan -->
+<div class="active-plan-container">
+    {{ active_plan.plan_content|safe }}
+</div>
+
+<!-- Plan History Accordion / List -->
+{% if history_plans %}
+<div class="card" style="margin-top: 40px;">
+    <h3>📜 Previous Diet Suggestions</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Review your older nutritional recommendations.</p>
+    
+    <div class="logs-list">
+        {% for old_plan in history_plans %}
+        <div class="log-item">
+            <div>
+                <span class="log-date">{{ old_plan.created_at.strftime('%B %d, %Y') }}</span>
+                <span style="color: var(--text-muted); margin-left: 15px;">Goal: {{ old_plan.goal }} | {{ old_plan.food_preference }}</span>
+            </div>
+            <a href="{{ url_for('view_old_diet', plan_id=old_plan.id) }}" class="btn btn-secondary btn-sm">
+                View Plan
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FitCampus AI{% endblock %}
+
+{% block dashboard_content %}
+<!-- Dashboard Welcome Header -->
+<div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+    <div>
+        <h1>Welcome Back, {{ profile.name if profile else current_user.username }}!</h1>
+        <p style="color: var(--text-secondary);">Here is your fitness checklist and progress overview for today.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{{ url_for('profile_setup') }}" class="btn btn-secondary">
+            <i class="fas fa-user-edit"></i> Edit Profile
+        </a>
+        <a href="{{ url_for('tracker') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Detailed Log
+        </a>
+    </div>
+</div>
+
+<!-- If User hasn't set up profile yet -->
+{% if not profile %}
+<div class="card" style="border-left: 4px solid var(--warning); margin-bottom: 30px; display: flex; align-items: center; gap: 20px; justify-content: space-between;">
+    <div>
+        <h3>⚠️ Setup Your Profile</h3>
+        <p style="color: var(--text-secondary); margin-top: 5px;">You need to configure your fitness metrics to generate personalized workout splits and diet plans.</p>
+    </div>
+    <a href="{{ url_for('profile_setup') }}" class="btn btn-primary">Setup Profile</a>
+</div>
+{% endif %}
+
+<div class="dashboard-grid">
+    
+    <!-- Left Dashboard Column -->
+    <div class="dashboard-left">
+        
+        <!-- Daily Progress Counter Stats -->
+        <div class="stats-grid">
+            <div class="card stat-card water">
+                <div class="stat-icon"><i class="fas fa-droplet"></i></div>
+                <span class="stat-val" id="lbl-water-val">{{ today_log.water_intake|default(0.0)|round(2) }} L</span>
+                <span class="stat-label">Hydration</span>
+            </div>
+            
+            <div class="card stat-card sleep">
+                <div class="stat-icon"><i class="fas fa-moon"></i></div>
+                <span class="stat-val" id="lbl-sleep-val">{{ today_log.sleep_hours|default(0.0)|round(1) }} hrs</span>
+                <span class="stat-label">Sleep</span>
+            </div>
+            
+            <div class="card stat-card workout">
+                <div class="stat-icon"><i class="fas fa-dumbbell"></i></div>
+                <span class="stat-val {% if today_log.workout_completed %}text-success{% else %}text-muted{% endif %}" id="lbl-workout-val">
+                    {{ 'Completed' if today_log.workout_completed else 'Pending' }}
+                </span>
+                <span class="stat-label">Workout</span>
+            </div>
+            
+            <div class="card stat-card calories">
+                <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                <span class="stat-val">{{ today_log.calories_consumed|default(0) }} kcal</span>
+                <span class="stat-label">Calories</span>
+            </div>
+        </div>
+        
+        <!-- Weight Progress Line Graph -->
+        <div class="card">
+            <h3>📈 Weight Progression (Last 7 Logs)</h3>
+            <div class="chart-container">
+                <canvas id="weightChart" data-labels='{{ weight_labels|tojson }}' data-values='{{ weight_values|tojson }}'></canvas>
+            </div>
+        </div>
+
+        <!-- Plans Shortcut Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h4>💪 Workout Routine</h4>
+                    <p style="color: var(--text-secondary); margin-top: 5px; font-size: 14px;">Access your active AI-generated splits, sets, reps, and exercise templates.</p>
+                </div>
+                <a href="{{ url_for('workout') }}" class="btn btn-primary" style="margin-top: 15px; width: fit-content;">View Workout</a>
+            </div>
+            
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h4>🍎 Diet Recommendations</h4>
+                    <p style="color: var(--text-secondary); margin-top: 5px; font-size: 14px;">Check out your daily calorie budget, macro ratio guidelines, and college-mess food hacks.</p>
+                </div>
+                <a href="{{ url_for('diet') }}" class="btn btn-primary" style="margin-top: 15px; width: fit-content;">View Diet</a>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Right Dashboard Column -->
+    <div class="dashboard-right">
+        
+        <!-- Quick Log Actions -->
+        <div class="card quick-log-card">
+            <div class="quick-log-header">
+                <h3>⚡ Quick Actions</h3>
+            </div>
+            <div class="log-inputs">
+                <button id="btn-log-water" class="quick-action-btn">
+                    <i class="fas fa-plus"></i> 250ml Water
+                </button>
+                <button id="btn-log-sleep" class="quick-action-btn">
+                    <i class="fas fa-plus"></i> 1 Hr Sleep
+                </button>
+                <button id="btn-log-workout" class="quick-action-btn" data-completed="{{ 'true' if today_log.workout_completed else 'false' }}" style="grid-column: span 2; {% if today_log.workout_completed %}background: rgba(16, 185, 129, 0.2); border-color: #10b981;{% endif %}">
+                    {% if today_log.workout_completed %}
+                        <i class="fas fa-check"></i> Workout Checked
+                    {% else %}
+                        <i class="fas fa-dumbbell"></i> Check Workout
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+        
+        <!-- AI Tip Card -->
+        <div class="card" style="background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.1), transparent 70%), var(--bg-card); border-color: rgba(139, 92, 246, 0.2);">
+            <h4 style="color: var(--accent); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-lightbulb"></i> AI Coach Tip of the Day
+            </h4>
+            <p style="margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">
+                {{ coach_tip }}
+            </p>
+        </div>
+
+        <!-- Circular Water Progress Visual -->
+        <div class="card" style="text-align: center;">
+            <h4>💧 Daily Hydration Target</h4>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px;">Goal: 3.0 Liters</p>
+            <div style="width: 150px; height: 150px; margin: 0 auto; position: relative;">
+                <canvas id="waterChart" data-current="{{ today_log.water_intake|default(0.0) }}"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;">
+                    <i class="fas fa-droplet" style="font-size: 24px; color: var(--primary);"></i>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

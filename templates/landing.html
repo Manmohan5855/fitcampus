@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}FitCampus AI - Personal AI Fitness Coach for College Students{% endblock %}
+
+{% block content %}
+<main>
+    <!-- Hero Section -->
+    <section class="landing-hero">
+        <div class="hero-content">
+            <span class="hero-tagline">🚀 Built for Students & Beginners</span>
+            <h1 class="hero-title">Your Personal AI Fitness Coach, <br><span style="color: var(--primary);">Class-Schedule Friendly</span>.</h1>
+            <p class="hero-description">
+                FitCampus AI creates customized workout splits, student-budget diet plans, and daily logs tailored to college routines, hostel dining halls, and home/gym preferences. Get consistent without expensive trainers.
+            </p>
+            <div class="hero-cta">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-right"></i> Go to My Dashboard
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">
+                        Get Started Free <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#how-it-works" class="btn btn-secondary btn-lg">Learn More</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features Section -->
+    <section class="landing-section" id="features">
+        <div class="section-header">
+            <h2>Everything You Need in One Place</h2>
+            <p>Combine planning, dieting, tracking, and reports in a student-centric platform.</p>
+        </div>
+        
+        <div class="features-grid">
+            <!-- Feature 1 -->
+            <div class="card feature-card">
+                <div class="feature-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+                <h3>AI Workout Generator</h3>
+                <p>Day-wise splits, exercise names, sets, reps, and cues tailored to gym or home setups based on your schedule.</p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="card feature-card">
+                <div class="feature-icon"><i class="fas fa-utensils"></i></div>
+                <h3>AI Budget Diet Planner</h3>
+                <p>Personalized meals, protein targets, and specialized hostel dining-hall hacks using cheap protein sources.</p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="card feature-card">
+                <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
+                <h3>Daily Health Log</h3>
+                <p>Monitor your weight, log hydration, track hours slept, and check off completed workouts instantly.</p>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="card feature-card">
+                <div class="feature-icon"><i class="fas fa-file-waveform"></i></div>
+                <h3>Weekly Insights & Reports</h3>
+                <p>See your consistency scores, weight trajectory graphs, and receive weekly constructive AI feedback.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Student Benefits Section -->
+    <section class="landing-section" id="how-it-works" style="background: rgba(255,255,255,0.01); border-radius: 24px; padding: 60px 40px; margin-bottom: 80px;">
+        <div class="section-header">
+            <h2>Why Students Love FitCampus AI</h2>
+            <p>We solve the unique friction points of college life.</p>
+        </div>
+        
+        <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+            <div style="display: flex; gap: 20px;">
+                <div style="font-size: 24px; color: var(--success);"><i class="fas fa-wallet"></i></div>
+                <div>
+                    <h4>Hostel Mess & Pocket-Friendly</h4>
+                    <p style="color: var(--text-secondary); margin-top: 5px;">Suggests cheap proteins like egg boilers, roasted chana, soya chunks, and oats. Provides guidelines on how to navigate oily hostel mess options.</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 20px;">
+                <div style="font-size: 24px; color: var(--success);"><i class="fas fa-clock"></i></div>
+                <div>
+                    <h4>Flexible to Lecture Timings</h4>
+                    <p style="color: var(--text-secondary); margin-top: 5px;">Inputs your class schedule to generate efficient splits (e.g. 3-day supersets or 45-min full body routines) so you never skip workouts during exams.</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 20px;">
+                <div style="font-size: 24px; color: var(--success);"><i class="fas fa-house-user"></i></div>
+                <div>
+                    <h4>No Gym Membership Required</h4>
+                    <p style="color: var(--text-secondary); margin-top: 5px;">Prefer working out in your hostel room or balcony? Choose 'Home Workouts' for bodyweight, band, and cardio schedules that don't need equipment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="landing-section" id="testimonials">
+        <div class="section-header">
+            <h2>Success Stories from Campus</h2>
+            <p>Read how other students transformed their lifestyles while balancing college work.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="card">
+                <p style="font-style: italic; color: var(--text-secondary);">"Living in a hostel, my diet was garbage. FitCampus AI suggested adding roasted chana and eggs to my diet. I lost 6kg in a semester!"</p>
+                <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">R</div>
+                    <div>
+                        <h5 style="margin: 0;">Rohan M.</h5>
+                        <small style="color: var(--text-secondary);">B.Tech Student</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <p style="font-style: italic; color: var(--text-secondary);">"I couldn't commit to a 6-day gym split. The 3-day full-body schedule from FitCampus was perfect. I hit my target weight of 75kg."</p>
+                <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #10b981; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">A</div>
+                    <div>
+                        <h5 style="margin: 0;">Anjali S.</h5>
+                        <small style="color: var(--text-secondary);">BCA Final Year</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Reminders - FitCampus AI{% endblock %}
+
+{% block dashboard_content %}
+<div class="main-header" style="margin-bottom: 30px;">
+    <h1>🔔 Consistency Reminders</h1>
+    <p style="color: var(--text-secondary);">Configure in-app notification cards and scheduling preferences to stay on track.</p>
+</div>
+
+<div class="reports-layout">
+    
+    <!-- Left Column: Preference Form -->
+    <div class="card">
+        <h3>⚙️ Notification Toggles</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Enable or disable system cues displayed on your dashboard.</p>
+        
+        <form action="{{ url_for('reminder_settings') }}" method="POST" style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+                <div>
+                    <h5 style="margin: 0; font-size: 16px;"><i class="fas fa-dumbbell" style="color: var(--success); margin-right: 8px;"></i> Workout Reminder</h5>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">Reminds you on your active split days to check in.</p>
+                </div>
+                <input type="checkbox" name="workout_reminded" value="y" {% if reminder.workout_reminded %}checked{% endif %} style="width: 22px; height: 22px; cursor: pointer;">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+                <div>
+                    <h5 style="margin: 0; font-size: 16px;"><i class="fas fa-droplet" style="color: var(--primary); margin-right: 8px;"></i> Hydration Reminder</h5>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">Triggers notifications if you are behind on water logs.</p>
+                </div>
+                <input type="checkbox" name="water_reminded" value="y" {% if reminder.water_reminded %}checked{% endif %} style="width: 22px; height: 22px; cursor: pointer;">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+                <div>
+                    <h5 style="margin: 0; font-size: 16px;"><i class="fas fa-moon" style="color: var(--accent); margin-right: 8px;"></i> Sleep Quality Alert</h5>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">Warns you on consecutive nights of low sleep (&lt; 6 hrs).</p>
+                </div>
+                <input type="checkbox" name="sleep_reminded" value="y" {% if reminder.sleep_reminded %}checked{% endif %} style="width: 22px; height: 22px; cursor: pointer;">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px;">
+                <div>
+                    <h5 style="margin: 0; font-size: 16px;"><i class="fas fa-calendar-check" style="color: var(--warning); margin-right: 8px;"></i> Weekly Report Check-In</h5>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">Notifies you at the end of the week to compile your log reports.</p>
+                </div>
+                <input type="checkbox" name="weekly_checkin" value="y" {% if reminder.weekly_checkin %}checked{% endif %} style="width: 22px; height: 22px; cursor: pointer;">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                Save Preferences <i class="fas fa-save"></i>
+            </button>
+        </form>
+    </div>
+    
+    <!-- Right Column: Visual Consistency Motivation -->
+    <div class="card" style="background: radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent 70%), var(--bg-card); display: flex; flex-direction: column; justify-content: center;">
+        <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 64px; color: var(--success); margin-bottom: 15px;"><i class="fas fa-shield-halved"></i></div>
+            <h3>Habit Stacking Principle</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin: 15px 0 20px 0;">
+                The easiest way to stay consistent in college is <strong>habit stacking</strong>: tying your logs to an existing routine. 
+                For example, log your weight right after brush, or tap the "+ 250ml Water" button every time you head into a new lecture hall.
+            </p>
+            <div style="display: inline-block; padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.03); font-size: 13px; color: var(--success); font-weight: bold; border: 1px dashed var(--success);">
+                💡 Tip: Turn on notifications to build triggers
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Weekly Progress Reports - FitCampus AI{% endblock %}
+
+{% block dashboard_content %}
+<div class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+    <div>
+        <h1>📊 Weekly Progress Reports</h1>
+        <p style="color: var(--text-secondary);">Analyze your consistency and read personalized recommendations from your AI coach.</p>
+    </div>
+    
+    <form action="{{ url_for('generate_report') }}" method="POST">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-arrows-rotate"></i> Compile Weekly Report
+        </button>
+    </form>
+</div>
+
+{% if not reports %}
+<div class="card" style="text-align: center; padding: 50px 20px;">
+    <div style="font-size: 48px; color: var(--primary); margin-bottom: 20px;"><i class="fas fa-chart-pie"></i></div>
+    <h3>No Weekly Reports Compiled Yet</h3>
+    <p style="color: var(--text-secondary); max-width: 500px; margin: 10px auto 20px auto;">
+        To generate a report, make sure you have logged at least a few daily entries in your tracker, then click compile above.
+    </p>
+    <form action="{{ url_for('generate_report') }}" method="POST">
+        <button type="submit" class="btn btn-success">
+            Compile Report Now <i class="fas fa-magic"></i>
+        </button>
+    </form>
+</div>
+{% else %}
+
+{% set latest = reports[0] %}
+<div class="reports-layout" style="margin-bottom: 40px;">
+    
+    <!-- Report Metrics Overview Card -->
+    <div class="card">
+        <h3>📊 Weekly Metrics ({{ latest.start_date.strftime('%b %d') }} - {{ latest.end_date.strftime('%b %d, %Y') }})</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 25px;">Summary of compiled logs for this week.</p>
+        
+        <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <div class="card stat-card" style="background: rgba(255, 255, 255, 0.02);">
+                <span class="stat-val" style="color: var(--primary);">{{ latest.consistency_score|round(0) }} / 100</span>
+                <span class="stat-label">Consistency Score</span>
+            </div>
+            
+            <div class="card stat-card" style="background: rgba(255, 255, 255, 0.02);">
+                <span class="stat-val" style="color: var(--success);">{{ latest.workout_completion_rate|round(0) }}%</span>
+                <span class="stat-label">Workout Rate</span>
+            </div>
+            
+            <div class="card stat-card" style="background: rgba(255, 255, 255, 0.02);">
+                <span class="stat-val" style="color: var(--accent);">{{ latest.average_sleep|round(1) }} hrs</span>
+                <span class="stat-label">Avg Sleep / Night</span>
+            </div>
+            
+            <div class="card stat-card" style="background: rgba(255, 255, 255, 0.02);">
+                <span class="stat-val" style="color: var(--warning);">
+                    {% if latest.weight_change > 0 %}+{% endif %}{{ latest.weight_change|round(2) }} kg
+                </span>
+                <span class="stat-label">Weight Change</span>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 20px; background: rgba(255,255,255,0.01); text-align: center;">
+            <span style="font-size: 13px; color: var(--text-secondary);"><i class="fas fa-droplet" style="color: var(--primary);"></i> Average Hydration:</span>
+            <strong style="font-size: 18px; margin-left: 8px;">{{ latest.average_water|round(2) }} L/day</strong>
+        </div>
+    </div>
+    
+    <!-- AI Coach Feedback HTML -->
+    <div class="active-report-feedback">
+        {{ latest.ai_feedback|safe }}
+    </div>
+
+</div>
+
+<!-- Older Reports Table -->
+{% if reports|length > 1 %}
+<div class="card">
+    <h3>📜 Report Archive</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Review compiled reports from previous weeks.</p>
+    
+    <div class="logs-list">
+        {% for rep in reports[1:] %}
+        <div class="log-item">
+            <div>
+                <span class="log-date">{{ rep.start_date.strftime('%B %d') }} - {{ rep.end_date.strftime('%B %d, %Y') }}</span>
+                <div style="margin-top: 5px; color: var(--text-secondary); display: flex; gap: 15px;">
+                    <span>Consistency: <strong>{{ rep.consistency_score|round(0) }}%</strong></span>
+                    <span>Weight Delta: <strong>{{ rep.weight_change }} kg</strong></span>
+                </div>
+            </div>
+            <a href="{{ url_for('view_old_report', report_id=rep.id) }}" class="btn btn-secondary btn-sm">
+                View Report
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

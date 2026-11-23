@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - FitCampus AI{% endblock %}
+
+{% block dashboard_content %}
+<div class="main-header" style="margin-bottom: 30px;">
+    <a href="{{ back_url }}" class="btn btn-secondary" style="margin-bottom: 20px;">
+        <i class="fas fa-arrow-left"></i> Back to {% if type == 'workout' %}Workout Split{% elif type == 'diet' %}Diet Recommendations{% else %}Weekly Reports{% endif %}
+    </a>
+    <h1>{{ title }}</h1>
+    <p style="color: var(--text-secondary);">{{ subtitle }}</p>
+</div>
+
+<div class="card" style="padding: 30px;">
+    <!-- Safely Render Plan Content -->
+    <div class="active-plan-container">
+        {{ content|safe }}
+    </div>
+</div>
+{% endblock %}
