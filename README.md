@@ -2,6 +2,8 @@
 
 FitCampus is a campus-focused fitness and wellness web app built with Flask. It provides personalized workout and diet plans, daily habit tracking, reminders, weekly progress reports, and an administrator dashboard.
 
+**Live demo:** https://fitcampus-awyb.onrender.com
+
 ## Features
 
 - User signup, login, profiles, and premium tiers
